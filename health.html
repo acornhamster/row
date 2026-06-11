@@ -6,26 +6,18 @@
 <meta name="theme-color" content="#050506">
 <meta name="color-scheme" content="dark">
 <title>Daily Stack — Customizable Template</title>
+<script src="theme.js"></script>
+<link rel="stylesheet" href="theme.css">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="sync.js" defer></script>
 <script src="topbar.js" defer></script>
 <style>
 :root {
-  --bg: #050506;
-  --bg-card: rgba(255, 255, 255, 0.04);
-  --bg-secondary: rgba(255, 255, 255, 0.035);
-  --bg-input: rgba(0, 0, 0, 0.28);
-  --bg-input-focus: rgba(0, 0, 0, 0.36);
-  --bg-dropdown: rgba(15, 15, 18, 0.96);
-
-  --border: rgba(255, 255, 255, 0.06);
-  --border-soft: rgba(255, 255, 255, 0.04);
-  --border-strong: rgba(255, 255, 255, 0.12);
-
-  --text-primary: #FAFAFA;
-  --text-secondary: #B8B6B0;
-  --text-tertiary: #76746E;
-  --text-quaternary: #4D4B47;
+  --bg: var(--bg-deep);
+  --bg-card: var(--card-glass);
+  --bg-secondary: rgba(var(--ink), 0.035);
+  --bg-input: var(--input-bg);
+  --bg-input-focus: var(--input-bg-focus);
 
   --accent: #1D9E75;
   --accent-glow: rgba(29, 158, 117, 0.35);
@@ -33,9 +25,14 @@
   --warning-bg: rgba(163, 45, 45, 0.10);
   --tag-stack: #D8AB30;
   --tag-stack-bg: rgba(216, 171, 48, 0.15);
-
-  --font: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+}
+:root[data-theme="light"] {
+  --accent: #14855F;
+  --accent-glow: rgba(20, 133, 95, 0.25);
+  --warning: #C2410C;
+  --warning-bg: rgba(194, 65, 12, 0.08);
+  --tag-stack: #9C7410;
+  --tag-stack-bg: rgba(156, 116, 16, 0.12);
 }
 
 * { box-sizing: border-box; }
@@ -61,7 +58,7 @@ body::before {
 }
 body::after {
   content: ''; position: fixed; inset: 0;
-  background-image: radial-gradient(rgba(255,255,255,0.014) 1px, transparent 1px);
+  background-image: radial-gradient(rgba(var(--ink), 0.014) 1px, transparent 1px);
   background-size: 3px 3px;
   pointer-events: none; z-index: 1;
 }
@@ -105,7 +102,7 @@ main {
   padding: 22px 22px 18px;
   backdrop-filter: blur(24px) saturate(1.2);
   -webkit-backdrop-filter: blur(24px) saturate(1.2);
-  box-shadow: 0 12px 40px rgba(0,0,0,0.45);
+  box-shadow: var(--shadow-card);
 }
 
 .stack-head { margin-bottom: 12px; }
@@ -130,15 +127,15 @@ main {
 }
 .stack-progress-track {
   height: 5px;
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(var(--ink), 0.05);
   border-radius: 999px; overflow: hidden;
   margin: 14px 0 18px;
 }
 .stack-progress-fill {
   height: 100%; width: 0%;
-  background: #FFFFFF; border-radius: 999px;
+  background: var(--text-1); border-radius: 999px;
   transition: width 0.5s cubic-bezier(0.22, 1, 0.36, 1);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4);
+  box-shadow: inset 0 1px 0 rgba(var(--ink), 0.4);
 }
 
 .stack-window { margin-bottom: 14px; }
@@ -163,19 +160,19 @@ main {
   border: 1px solid transparent;
   transition: background 0.2s, border-color 0.2s;
 }
-.stack-item:hover { background: rgba(255,255,255,0.05); }
+.stack-item:hover { background: rgba(var(--ink), 0.05); }
 .stack-item.taken { background: rgba(29,158,117,0.08); }
 .stack-item.taken .stack-item-name { text-decoration: line-through; color: var(--text-tertiary); }
 
 @keyframes pulse-red {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
-  50%      { box-shadow: 0 0 0 8px rgba(239, 68, 68, 0); }
+  0%, 100% { box-shadow: 0 0 0 0 rgba(var(--bad-rgb), 0.4); }
+  50%      { box-shadow: 0 0 0 8px rgba(var(--bad-rgb), 0); }
 }
 .stack-item.missed {
-  border: 1px solid rgba(239, 68, 68, 0.45);
+  border: 1px solid rgba(var(--bad-rgb), 0.45);
   animation: pulse-red 1.5s ease-in-out infinite;
 }
-.stack-item.missed .stack-check { border-color: rgba(239, 68, 68, 0.55); }
+.stack-item.missed .stack-check { border-color: rgba(var(--bad-rgb), 0.55); }
 .stack-item.taken.missed { animation: none; border-color: transparent; }
 .stack-item.taken.missed .stack-check { border-color: var(--accent); }
 
@@ -207,7 +204,7 @@ main {
   outline: none;
 }
 .stack-item-name[contenteditable="true"] {
-  outline: 1px solid rgba(255,255,255,0.25);
+  outline: 1px solid rgba(var(--ink), 0.25);
   outline-offset: 4px; border-radius: 4px;
 }
 .stack-item-meta {
@@ -215,7 +212,7 @@ main {
   margin-top: 2px; outline: none; cursor: text;
 }
 .stack-item-meta[contenteditable="true"] {
-  outline: 1px solid rgba(255,255,255,0.2);
+  outline: 1px solid rgba(var(--ink), 0.2);
   outline-offset: 4px; border-radius: 4px;
   color: var(--text-secondary);
 }
@@ -271,9 +268,9 @@ main {
 }
 .stack-item:hover .stack-item-del { opacity: 1; }
 .stack-item-del:hover, .stack-item-del:active {
-  color: #FF6B6B;
-  border-color: rgba(239, 68, 68, 0.45);
-  background: rgba(239, 68, 68, 0.08);
+  color: var(--bad);
+  border-color: rgba(var(--bad-rgb), 0.45);
+  background: rgba(var(--bad-rgb), 0.08);
   opacity: 1;
 }
 
@@ -291,8 +288,8 @@ main {
   gap: 12px;
   padding: 10px 14px;
   margin-bottom: 14px;
-  background: rgba(0, 0, 0, 0.28);
-  border: 1px solid rgba(255, 255, 255, 0.04);
+  background: var(--input-bg);
+  border: 1px solid rgba(var(--ink), 0.04);
   border-radius: 10px;
   font-size: 12px;
   min-height: 36px;
@@ -300,18 +297,18 @@ main {
 .stack-ticker-dot {
   width: 8px; height: 8px;
   border-radius: 50%;
-  background: #6BE3A4;
+  background: var(--good);
   flex-shrink: 0;
   transition: background 0.3s;
 }
-.stack-ticker.status-low .stack-ticker-dot { background: #FF8A4D; }
+.stack-ticker.status-low .stack-ticker-dot { background: var(--warning); }
 .stack-ticker.status-missed .stack-ticker-dot {
-  background: #FF6B6B;
+  background: var(--bad);
   animation: ticker-pulse 1.5s ease-in-out infinite;
 }
 @keyframes ticker-pulse {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.5); }
-  50%      { box-shadow: 0 0 0 5px rgba(239, 68, 68, 0); }
+  0%, 100% { box-shadow: 0 0 0 0 rgba(var(--bad-rgb), 0.5); }
+  50%      { box-shadow: 0 0 0 5px rgba(var(--bad-rgb), 0); }
 }
 .stack-ticker-label {
   font-family: var(--font-mono);
@@ -367,7 +364,7 @@ main {
 .stack-input::placeholder { color: var(--text-tertiary); }
 .stack-input:focus {
   outline: none;
-  border-color: rgba(255, 255, 255, 0.40);
+  border-color: rgba(var(--ink), 0.40);
   background: var(--bg-input-focus);
 }
 .stack-select { cursor: pointer; }
@@ -375,20 +372,18 @@ main {
   font-size: 13px;
   padding: 9px 11px;
   border-radius: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.85);
-  background: linear-gradient(180deg, #FFFFFF 0%, #E8E5DD 100%);
-  color: #0A0A0B;
+  border: 1px solid var(--btn-border);
+  background: var(--btn-grad);
+  color: var(--btn-text);
   font-weight: 700;
   letter-spacing: 0.005em;
   cursor: pointer;
   font-family: inherit;
   transition: transform 0.12s, box-shadow 0.18s, background 0.18s;
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.55),
-    0 4px 14px rgba(0, 0, 0, 0.30);
+  box-shadow: var(--btn-shadow);
 }
 .stack-add-btn:hover {
-  background: linear-gradient(180deg, #FFFFFF 0%, #F2F0EA 100%);
+  background: var(--btn-grad);
   transform: translateY(-1px);
 }
 .stack-add-btn:active { transform: translateY(0) scale(0.97); }
@@ -408,7 +403,7 @@ main {
   overflow-y: auto;
   backdrop-filter: blur(20px) saturate(1.2);
   -webkit-backdrop-filter: blur(20px) saturate(1.2);
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.65);
+  box-shadow: var(--shadow-pop);
   z-index: 50;
   padding: 6px;
 }
@@ -427,7 +422,7 @@ main {
   color: var(--text-secondary);
   transition: background 0.12s;
 }
-.stack-result:hover, .stack-result.is-focused { background: rgba(255, 255, 255, 0.06); }
+.stack-result:hover, .stack-result.is-focused { background: rgba(var(--ink), 0.06); }
 
 .stack-result-icon { font-size: 17px; flex-shrink: 0; width: 24px; text-align: center; }
 .stack-result-body { min-width: 0; flex: 1; }
@@ -463,8 +458,8 @@ main {
 ::selection { background: rgba(224, 118, 88, 0.3); color: var(--text-primary); }
 ::-webkit-scrollbar { width: 10px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.08); border-radius: 999px; }
-::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.15); }
+::-webkit-scrollbar-thumb { background: rgba(var(--ink), 0.08); border-radius: 999px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(var(--ink), 0.15); }
 </style>
 </head>
 <body>
@@ -885,7 +880,7 @@ main {
       const textSpan = el.querySelector('.stack-item-name-text');
       if (!textSpan) return;
       textSpan.setAttribute('contenteditable', 'true');
-      textSpan.style.outline = '1px solid rgba(255,255,255,0.25)';
+      textSpan.style.outline = '1px solid rgba(var(--ink), 0.25)';
       textSpan.style.outlineOffset = '4px';
       textSpan.style.borderRadius = '4px';
       textSpan.focus();
