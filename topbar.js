@@ -10,10 +10,6 @@
 (function () {
   'use strict';
 
-  // -------- Supabase config (same project as the rest of the dashboard) --------
-  const TOPBAR_SUPABASE_URL = 'https://cnnwlziwjxmnmvzmoyqy.supabase.co';
-  const TOPBAR_SUPABASE_KEY = 'sb_publishable_0INCmC9uLipP8h12KuVwEg_MRCcmEjs';
-
   // -------- CSS --------
   const css = `
 .topbar {
@@ -280,23 +276,6 @@ body.topbar-modal-open { overflow: hidden; touch-action: none; }
       caffeineMgPerDay: 200, substances: [], logs: {}
     };
   }
-  async function pushWaterMergedToSupabase(localWater) {
-    if (window.location.pathname.endsWith('/health.html') ||
-        window.location.pathname.endsWith('health.html')) return;
-    if (!window.supabase || !TOPBAR_SUPABASE_URL || !TOPBAR_SUPABASE_KEY) return;
-    if (TOPBAR_SUPABASE_URL.indexOf('PASTE-') === 0) return;
-    try {
-      const supa = window.supabase.createClient(TOPBAR_SUPABASE_URL, TOPBAR_SUPABASE_KEY);
-      const { data } = await supa
-        .from('app_state').select('data').eq('key', 'health').maybeSingle();
-      const current = (data && data.data) || {};
-      const merged = Object.assign({}, current, { po_water_v1: localWater });
-      await supa.from('app_state').upsert(
-        { key: 'health', data: merged, updated_at: new Date().toISOString() },
-        { onConflict: 'key' }
-      );
-    } catch (e) {}
-  }
   function addWater() {
     let state = null;
     try { state = JSON.parse(localStorage.getItem('po_water_v1')); } catch (e) {}
@@ -308,7 +287,6 @@ body.topbar-modal-open { overflow: hidden; touch-action: none; }
     render();
     const btn = document.getElementById('topbarWaterAdd');
     if (btn) { btn.classList.add('flash'); setTimeout(() => btn.classList.remove('flash'), 220); }
-    pushWaterMergedToSupabase(state);
   }
 
   function blockGesture(e) { e.preventDefault(); }
