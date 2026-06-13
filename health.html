@@ -544,9 +544,9 @@ main {
   ];
 
   const STACK_WINDOWS = [
-    { key: 'morning', icon: '🌅', title: 'Morning', time: '7–10 AM', cutoffHour: 10 },
-    { key: 'lunch',   icon: '🍽️', title: 'Lunch',   time: '12–2 PM', cutoffHour: 14 },
-    { key: 'evening', icon: '🌙', title: 'Evening', time: '9–11 PM', cutoffHour: 23 },
+    { key: 'morning', icon: '🌅', title: 'Morning', time: '7 AM–1 PM', cutoffHour: 13 },
+    { key: 'lunch',   icon: '🍽️', title: 'Lunch',   time: '1–5 PM', cutoffHour: 17 },
+    { key: 'evening', icon: '🌙', title: 'Evening', time: '6–11 PM', cutoffHour: 23 },
     { key: 'anytime', icon: '⏱️', title: 'Anytime', time: 'No fixed window', cutoffHour: null },
   ];
 
@@ -780,7 +780,7 @@ main {
       if (isPastCutoff && !isTaken) {
         missed.push({
           type: 'missed',
-          text: `${item.name} — missed ${win.title.toLowerCase()} dose`
+          text: `${item.name} — missed ${win.title.toLowerCase()} activity`
         });
       }
       if (low.includes(item.id)) {
